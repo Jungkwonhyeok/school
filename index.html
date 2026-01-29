@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>학교 정보 (시간표/급식)</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand__title">학교 정보</div>
+          <div class="brand__sub">시간표 · 급식</div>
+        </div>
+
+        <div class="topbar__actions">
+          <div id="authPill" class="pill" hidden>
+            <span class="pill__dot" aria-hidden="true"></span>
+            <span id="authPillText" class="pill__text">로그인이 필요합니다</span>
+          </div>
+          <button id="btnAuthOpen" class="btn btn--ghost" type="button">로그인</button>
+          <button id="btnLogout" class="btn btn--ghost" type="button" hidden>로그아웃</button>
+          <button id="btnToday" class="btn btn--ghost" type="button">오늘</button>
+          <button id="btnTheme" class="btn btn--ghost" type="button" aria-pressed="false">
+            다크모드
+          </button>
+        </div>
+      </header>
+
+      <main class="grid">
+        <section class="card">
+          <div class="card__header">
+            <h2 class="card__title">학교 선택</h2>
+            <div class="card__hint">지역/유형/학교명으로 검색 후 선택해주세요.</div>
+          </div>
+
+          <div class="form">
+            <label class="field">
+              <span class="field__label">지역(교육청)</span>
+              <select id="regionSelect" class="field__control"></select>
+            </label>
+
+            <label class="field">
+              <span class="field__label">학교 유형</span>
+              <select id="schoolTypeSelect" class="field__control">
+                <option value="elementary">초등학교</option>
+                <option value="middle">중학교</option>
+                <option value="high">고등학교</option>
+              </select>
+            </label>
+
+            <label class="field field--wide">
+              <span class="field__label">학교명</span>
+              <div class="inline">
+                <input
+                  id="schoolNameInput"
+                  class="field__control"
+                  type="text"
+                  placeholder="예) 서울고, OO중, OO초"
+                  autocomplete="off"
+                />
+                <button id="btnSearchSchool" class="btn" type="button">검색</button>
+              </div>
+              <div class="field__help">검색이 느리면 학교명을 더 정확히 입력해주세요.</div>
+            </label>
+
+            <label class="field field--wide">
+              <span class="field__label">검색 결과</span>
+              <select id="schoolResultSelect" class="field__control">
+                <option value="">학교를 검색한 뒤 선택해주세요.</option>
+              </select>
+            </label>
+
+            <div class="inline inline--wrap">
+              <label class="field">
+                <span class="field__label">학년</span>
+                <select id="gradeSelect" class="field__control"></select>
+              </label>
+
+              <label class="field">
+                <span class="field__label">반</span>
+                <input
+                  id="classInput"
+                  class="field__control"
+                  type="text"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  placeholder="예) 1"
+                  list="classList"
+                />
+                <datalist id="classList"></datalist>
+              </label>
+
+              <label class="field field--grow">
+                <span class="field__label">날짜</span>
+                <input id="dateInput" class="field__control" type="date" />
+              </label>
+
+              <button id="btnLoad" class="btn btn--primary" type="button">불러오기</button>
+              <button id="btnFavorite" class="btn" type="button">즐겨찾기 저장</button>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <details id="favoritesDetails" class="details">
+            <summary class="details__summary">즐겨찾기</summary>
+            <div class="details__content">
+              <div class="inline inline--wrap details__actions">
+                <div class="muted">학교/학년/반 세트를 저장해 빠르게 불러올 수 있습니다.</div>
+                <button id="btnClearFavorites" class="btn btn--ghost" type="button">전체 삭제</button>
+              </div>
+              <div id="favoriteList" class="favorites empty">
+                <div class="muted">아직 저장된 즐겨찾기가 없습니다.</div>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <section class="card card--wide">
+          <div class="card__header">
+            <h2 class="card__title">결과</h2>
+            <div id="resultMeta" class="card__hint">학교를 선택하고 날짜를 고른 뒤, 불러오기를 눌러주세요.</div>
+          </div>
+
+          <div id="status" class="status" hidden></div>
+
+          <div class="results">
+            <section class="result-block">
+              <h3 class="result-title">시간표</h3>
+              <div id="timetable" class="panel">
+                <div class="muted">시간표가 여기에 표시됩니다.</div>
+              </div>
+            </section>
+
+            <section class="result-block">
+              <h3 class="result-title">급식</h3>
+              <details id="mealDetails" class="details">
+                <summary class="details__summary">펼쳐서 급식 메뉴를 확인하세요</summary>
+                <div id="meal" class="panel">
+                  <div class="muted">급식이 여기에 표시됩니다.</div>
+                </div>
+              </details>
+            </section>
+
+            <section class="result-block">
+              <h3 class="result-title">내가 별표한 급식</h3>
+              <div id="starredMealList" class="panel">
+                <div class="muted">로그인 후 원하는 급식을 별표하면, 어떤 날 나오는지 한 번에 볼 수 있습니다.</div>
+              </div>
+            </section>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="footer__text">
+          데이터 출처: NEIS Open API (교육행정정보시스템)
+        </div>
+      </footer>
+    </div>
+
+    <div id="authModal" class="modal" hidden>
+      <div class="modal__backdrop" data-close="1"></div>
+      <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+        <div class="modal__header">
+          <div>
+            <div id="authTitle" class="modal__title">로그인 / 회원가입</div>
+            <div class="modal__sub">즐겨찾기는 로그인한 계정에 저장됩니다.</div>
+          </div>
+          <button id="btnAuthClose" class="btn btn--ghost" type="button">닫기</button>
+        </div>
+
+        <div class="modal__body">
+          <div class="tabs">
+            <button id="tabLogin" class="tab tab--active" type="button">로그인</button>
+            <button id="tabSignup" class="tab" type="button">회원가입</button>
+          </div>
+
+          <form id="formLogin" class="authform">
+            <label class="field field--wide">
+              <span class="field__label">아이디</span>
+              <input id="loginId" class="field__control" type="text" autocomplete="username" />
+              <div class="field__help">아이디는 이메일 형식이 아니어도 됩니다.</div>
+            </label>
+            <label class="field field--wide">
+              <span class="field__label">비밀번호</span>
+              <input id="loginPw" class="field__control" type="password" autocomplete="current-password" />
+            </label>
+            <button id="btnLogin" class="btn btn--primary" type="submit">로그인</button>
+          </form>
+
+          <form id="formSignup" class="authform" hidden>
+            <label class="field field--wide">
+              <span class="field__label">아이디</span>
+              <input id="signupId" class="field__control" type="text" autocomplete="username" />
+              <div class="field__help">아이디는 이메일 형식이 아니어도 됩니다.</div>
+            </label>
+            <label class="field field--wide">
+              <span class="field__label">비밀번호</span>
+              <input id="signupPw" class="field__control" type="password" autocomplete="new-password" />
+              <div class="field__help">비밀번호는 6자 이상이어야 합니다.</div>
+            </label>
+            <button id="btnSignup" class="btn btn--primary" type="submit">회원가입</button>
+          </form>
+
+          <div id="authMessage" class="authmsg" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
